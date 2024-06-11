@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate QR Code</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="shine">Generate QR Code</div>
@@ -27,7 +27,7 @@
         <span>Download</span>
     </a>
     <!--  -->
-    <div class="rating">
+    <div class="rating" style="display: none;">
         <input value="5" name="rating" id="star5" type="radio">
         <label for="star5"></label>
         <input value="4" name="rating" id="star4" type="radio">
@@ -40,13 +40,13 @@
         <label for="star1"></label>
     </div>
     <!-- Icon facebook -->
-    <button >
+    <button>
         <div class="svg-wrapper-1" href="https://uiverse.io/sahilxkhadka/gentle-hound-4">
           <div class="svg-wrapper">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16"> <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path> </svg>
           </div>
         </div>
-        <div class="text" >Audom</div>
+        <div class="text">Audom</div>
       </button>
 
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
@@ -64,14 +64,40 @@
             var qrcodeDiv = document.getElementById("qrcode");
             qrcodeDiv.innerHTML = "";
 
-            // Generate new QR code
-            var qrcode = new QRCode(qrcodeDiv, text);
-            
+            // Generate new QR code with margins
+            var qrcode = new QRCode(qrcodeDiv, {
+                text: text,
+                width: 256,  // QR code size
+                height: 256,  // QR code size
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
             // Wait for the QR code to be generated
             setTimeout(function() {
-                // Get the QR code image data
+                // Get the QR code canvas
                 var qrCanvas = qrcodeDiv.querySelector('canvas');
-                var qrImage = qrCanvas.toDataURL("image/png");
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+
+                // Set canvas size to include margins
+                var margin = 20;
+                var qrSize = qrCanvas.width;
+                canvas.width = qrSize + margin * 2;
+                canvas.height = qrSize + margin * 2;
+
+                // Draw the QR code on the new canvas with margins
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(qrCanvas, margin, margin);
+
+                // Replace the old QR code canvas with the new one
+                qrcodeDiv.innerHTML = '';
+                qrcodeDiv.appendChild(canvas);
+
+                // Get the QR code image data
+                var qrImage = canvas.toDataURL("image/png");
 
                 // Set the download link href and display it
                 var downloadLink = document.getElementById("Download-button");
